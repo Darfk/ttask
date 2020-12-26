@@ -20,7 +20,8 @@ func NewWorker() *Worker {
 }
 
 func (worker *Worker) Run(ctx context.Context) {
-	load := ctx.Value(ContextKey(KeyLoad))
+	var load *sync.WaitGroup
+	load, _ = ctx.Value(ContextKey(KeyLoad)).(*sync.WaitGroup)
 
 	for {
 		var tasks []Task
@@ -37,7 +38,7 @@ func (worker *Worker) Run(ctx context.Context) {
 				tasks = nil
 			}
 
-			if load, is := load.(*sync.WaitGroup); is && load != nil {
+			if load != nil {
 				load.Add(len(tasks) - 1)
 			}
 		}
